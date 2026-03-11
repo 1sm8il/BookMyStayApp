@@ -3,18 +3,17 @@
  * MAIN CLASS - BookMyStayApp
  * =====================================================
  *
- * Use Case 3: Centralized Room Inventory Management
+ * Use Case 4: Room Search & Availability Check
  *
  * Description:
- * This class demonstrates how room availability
- * is managed using a centralized inventory.
+ * This class demonstrates how guests
+ * can view available rooms without
+ * modifying inventory data.
  *
- * Room objects are used to retrieve pricing
- * and room characteristics.
+ * The system enforces read-only access
+ * by design and usage discipline.
  *
- * No booking or search logic is introduced here.
- *
- * @version 3.0
+ * @version 4.0
  */
 public class BookMyStayApp {
 
@@ -25,9 +24,9 @@ public class BookMyStayApp {
      */
     public static void main(String[] args) {
 
-        System.out.println("Hotel Room Inventory Status\n");
+        System.out.println("Room Search\n");
 
-        // Create room objects for domain information
+        // Create room objects
         Room singleRoom = new SingleRoom();
         Room doubleRoom = new DoubleRoom();
         Room suiteRoom = new SuiteRoom();
@@ -35,19 +34,10 @@ public class BookMyStayApp {
         // Create centralized inventory
         RoomInventory inventory = new RoomInventory();
 
-        // Display Single Room details
-        System.out.println("Single Room:");
-        singleRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " + inventory.getAvailableCount("Single Room"));
+        // Create search service
+        RoomSearchService searchService = new RoomSearchService();
 
-        // Display Double Room details
-        System.out.println("\nDouble Room:");
-        doubleRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " + inventory.getAvailableCount("Double Room"));
-
-        // Display Suite Room details
-        System.out.println("\nSuite Room:");
-        suiteRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " + inventory.getAvailableCount("Suite Room"));
+        // Perform room search (read-only operation)
+        searchService.searchAvailableRooms(inventory, singleRoom, doubleRoom, suiteRoom);
     }
 }

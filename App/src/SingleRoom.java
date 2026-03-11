@@ -3,9 +3,7 @@
  * CLASS - SingleRoom
  * =====================================================
  *
- * Represents a single room in the hotel.
- *
- * @version 3.0
+ * @version 4.0
  */
 public class SingleRoom extends Room {
 
