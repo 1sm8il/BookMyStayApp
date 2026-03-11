@@ -3,9 +3,7 @@
  * CLASS - SuiteRoom
  * =====================================================
  *
- * Represents a suite room in the hotel.
- *
- * @version 3.0
+ * @version 4.0
  */
 public class SuiteRoom extends Room {
 

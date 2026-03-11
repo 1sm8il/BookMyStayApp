@@ -3,12 +3,9 @@
  * ABSTRACT CLASS - Room
  * =====================================================
  *
- * Use Case 3: Centralized Room Inventory Management
+ * Use Case 4: Room Search & Availability Check
  *
- * Description:
- * This abstract class represents a generic hotel room.
- *
- * @version 3.0
+ * @version 4.0
  */
 public abstract class Room {
 

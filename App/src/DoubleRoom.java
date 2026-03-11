@@ -3,9 +3,7 @@
  * CLASS - DoubleRoom
  * =====================================================
  *
- * Represents a double room in the hotel.
- *
- * @version 3.0
+ * @version 4.0
  */
 public class DoubleRoom extends Room {
 
