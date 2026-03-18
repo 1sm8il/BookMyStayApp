@@ -6,9 +6,9 @@ import java.util.Queue;
  * CLASS - BookingRequestQueue
  * =====================================================
  *
- * Use Case 10: Booking Cancellation & Inventory Rollback
+ * Use Case 11: Concurrent Booking Simulation
  *
- * @version 10.0
+ * @version 11.0
  */
 public class BookingRequestQueue {
 
@@ -28,5 +28,9 @@ public class BookingRequestQueue {
 
     public boolean hasPendingRequests() {
         return !requestQueue.isEmpty();
+    }
+
+    public int getQueueSize() {
+        return requestQueue.size();
     }
 }

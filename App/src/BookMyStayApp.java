@@ -3,16 +3,17 @@
  * MAIN CLASS - BookMyStayApp
  * =====================================================
  *
- * Use Case 10: Booking Cancellation & Inventory Rollback
+ * Use Case 11: Concurrent Booking Simulation
  *
  * Description:
- * This class demonstrates how confirmed
- * bookings can be cancelled safely.
+ * This class simulates multiple users
+ * attempting to book rooms at the same time.
  *
- * Inventory is restored and rollback
- * history is maintained.
+ * It highlights race conditions and
+ * demonstrates how synchronization
+ * prevents inconsistent allocations.
  *
- * @version 10.0
+ * @version 11.0
  */
 public class BookMyStayApp {
 
@@ -23,45 +24,106 @@ public class BookMyStayApp {
      */
     public static void main(String[] args) {
 
-        System.out.println("Booking Cancellation");
+        System.out.println("=== Concurrent Booking Simulation ===\n");
 
-        // Initialize components
+        // Initialize shared components
         RoomInventory inventory = new RoomInventory();
+        BookingRequestQueue bookingQueue = new BookingRequestQueue();
         RoomAllocationService allocationService = new RoomAllocationService();
-        CancellationService cancellationService = new CancellationService();
 
-        // Create initial bookings
-        Reservation r1 = new Reservation("Abhi", "Single");
-        Reservation r2 = new Reservation("Subha", "Double");
-        Reservation r3 = new Reservation("Vanmathi", "Suite");
+        System.out.println("Initial Inventory:");
+        inventory.displayInventory();
 
-        // Allocate rooms
-        String roomId1 = allocationService.allocateRoom(r1, inventory);
-        String roomId2 = allocationService.allocateRoom(r2, inventory);
-        String roomId3 = allocationService.allocateRoom(r3, inventory);
+        // Create multiple booking requests
+        System.out.println("\nCreating booking requests...");
+        String[][] bookings = {
+                {"Alice", "Single"},
+                {"Bob", "Double"},
+                {"Charlie", "Suite"},
+                {"Diana", "Single"},
+                {"Eve", "Double"},
+                {"Frank", "Single"},
+                {"Grace", "Suite"},
+                {"Henry", "Double"},
+                {"Ivy", "Single"},
+                {"Jack", "Single"}
+        };
 
-        // Register bookings for cancellation tracking
-        if (roomId1 != null) {
-            cancellationService.registerBooking(roomId1, "Single");
-        }
-        if (roomId2 != null) {
-            cancellationService.registerBooking(roomId2, "Double");
-        }
-        if (roomId3 != null) {
-            cancellationService.registerBooking(roomId3, "Suite");
-        }
-
-        System.out.println();
-
-        // Cancel a booking (demonstrating rollback)
-        if (roomId1 != null) {
-            cancellationService.cancelBooking(roomId1, inventory);
+        // Add all requests to queue
+        for (String[] booking : bookings) {
+            Reservation reservation = new Reservation(booking[0], booking[1]);
+            bookingQueue.addRequest(reservation);
+            System.out.println("  Added: " + booking[0] + " -> " + booking[1]);
         }
 
-        // Show rollback history
-        cancellationService.showRollbackHistory();
+        System.out.println("\nTotal requests in queue: " + bookingQueue.getQueueSize());
 
-        // Display updated availability
-        System.out.println("\nUpdated Single Room Availability: " + inventory.getAvailableCount("Single"));
+        System.out.println("\n=== Starting Concurrent Processing ===\n");
+
+        // Create multiple threads to process bookings concurrently
+        Thread t1 = new Thread(
+                new ConcurrentBookingProcessor(
+                        bookingQueue, inventory, allocationService,
+                        "Thread-1"
+                )
+        );
+
+        Thread t2 = new Thread(
+                new ConcurrentBookingProcessor(
+                        bookingQueue, inventory, allocationService,
+                        "Thread-2"
+                )
+        );
+
+        Thread t3 = new Thread(
+                new ConcurrentBookingProcessor(
+                        bookingQueue, inventory, allocationService,
+                        "Thread-3"
+                )
+        );
+
+        // Start concurrent processing
+        t1.start();
+        t2.start();
+        t3.start();
+
+        // Wait for all threads to complete
+        try {
+            t1.join();
+            t2.join();
+            t3.join();
+        } catch (InterruptedException e) {
+            System.out.println("Thread execution interrupted.");
+            Thread.currentThread().interrupt();
+        }
+
+        System.out.println("\n=== Simulation Complete ===");
+
+        // Display final results
+        System.out.println("\nFinal Inventory Status:");
+        inventory.displayInventory();
+
+        System.out.println("\nTotal Allocations: " + allocationService.getTotalAllocations());
+        System.out.println("Expected Allocations: " + bookings.length);
+
+        // Verify consistency
+        int totalRemaining = inventory.getAvailableCount("Single") +
+                inventory.getAvailableCount("Double") +
+                inventory.getAvailableCount("Suite");
+
+        int totalInitial = 5 + 3 + 2; // Initial inventory
+        int totalProcessed = totalInitial - totalRemaining;
+
+        System.out.println("\nConsistency Check:");
+        System.out.println("  Initial rooms: " + totalInitial);
+        System.out.println("  Remaining rooms: " + totalRemaining);
+        System.out.println("  Rooms allocated: " + totalProcessed);
+        System.out.println("  Allocations recorded: " + allocationService.getTotalAllocations());
+
+        if (totalProcessed == allocationService.getTotalAllocations()) {
+            System.out.println("\n✓ System state is CONSISTENT (No race conditions detected)");
+        } else {
+            System.out.println("\n✗ System state is INCONSISTENT (Race condition detected!)");
+        }
     }
 }
