@@ -6,9 +6,9 @@ import java.util.Map;
  * CLASS - RoomInventory
  * =====================================================
  *
- * Use Case 4: Room Search & Availability Check
+ * Use Case 6: Reservation Confirmation & Room Allocation
  *
- * @version 4.0
+ * @version 6.0
  */
 public class RoomInventory {
 
