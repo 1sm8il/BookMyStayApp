@@ -1,22 +1,18 @@
-import java.util.Scanner;
-
 /**
  * =====================================================
  * MAIN CLASS - BookMyStayApp
  * =====================================================
  *
- * Use Case 9: Error Handling & Validation
+ * Use Case 10: Booking Cancellation & Inventory Rollback
  *
  * Description:
- * This class demonstrates how user input
- * is validated before booking is processed.
+ * This class demonstrates how confirmed
+ * bookings can be cancelled safely.
  *
- * The system:
- * - Accepts user input
- * - Validates input centrally
- * - Handles errors gracefully
+ * Inventory is restored and rollback
+ * history is maintained.
  *
- * @version 9.0
+ * @version 10.0
  */
 public class BookMyStayApp {
 
@@ -27,39 +23,45 @@ public class BookMyStayApp {
      */
     public static void main(String[] args) {
 
-        // Display application header
-        System.out.println("Booking Validation");
+        System.out.println("Booking Cancellation");
 
-        Scanner scanner = new Scanner(System.in);
-
-        // Initialize required components
+        // Initialize components
         RoomInventory inventory = new RoomInventory();
-        ReservationValidator validator = new ReservationValidator();
-        BookingRequestQueue bookingQueue = new BookingRequestQueue();
+        RoomAllocationService allocationService = new RoomAllocationService();
+        CancellationService cancellationService = new CancellationService();
 
-        try {
-            // Accept user input
-            System.out.print("Enter guest name: ");
-            String guestName = scanner.nextLine();
+        // Create initial bookings
+        Reservation r1 = new Reservation("Abhi", "Single");
+        Reservation r2 = new Reservation("Subha", "Double");
+        Reservation r3 = new Reservation("Vanmathi", "Suite");
 
-            System.out.print("Enter room type (Single/Double/Suite): ");
-            String roomType = scanner.nextLine();
+        // Allocate rooms
+        String roomId1 = allocationService.allocateRoom(r1, inventory);
+        String roomId2 = allocationService.allocateRoom(r2, inventory);
+        String roomId3 = allocationService.allocateRoom(r3, inventory);
 
-            // Validate input
-            validator.validate(guestName, roomType, inventory);
-
-            // If validation passes, create and queue reservation
-            Reservation reservation = new Reservation(guestName, roomType);
-            bookingQueue.addRequest(reservation);
-
-            System.out.println("Booking request accepted for: " + guestName);
-
-        } catch (InvalidBookingException e) {
-            // Handle domain-specific validation errors
-            System.out.println("Booking failed: " + e.getMessage());
-
-        } finally {
-            scanner.close();
+        // Register bookings for cancellation tracking
+        if (roomId1 != null) {
+            cancellationService.registerBooking(roomId1, "Single");
         }
+        if (roomId2 != null) {
+            cancellationService.registerBooking(roomId2, "Double");
+        }
+        if (roomId3 != null) {
+            cancellationService.registerBooking(roomId3, "Suite");
+        }
+
+        System.out.println();
+
+        // Cancel a booking (demonstrating rollback)
+        if (roomId1 != null) {
+            cancellationService.cancelBooking(roomId1, inventory);
+        }
+
+        // Show rollback history
+        cancellationService.showRollbackHistory();
+
+        // Display updated availability
+        System.out.println("\nUpdated Single Room Availability: " + inventory.getAvailableCount("Single"));
     }
 }

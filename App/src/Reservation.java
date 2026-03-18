@@ -3,9 +3,9 @@
  * CLASS - Reservation
  * =====================================================
  *
- * Use Case 9: Error Handling & Validation
+ * Use Case 10: Booking Cancellation & Inventory Rollback
  *
- * @version 9.0
+ * @version 10.0
  */
 public class Reservation {
 
