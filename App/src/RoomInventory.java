@@ -6,9 +6,9 @@ import java.util.Map;
  * CLASS - RoomInventory
  * =====================================================
  *
- * Use Case 10: Booking Cancellation & Inventory Rollback
+ * Use Case 11: Concurrent Booking Simulation
  *
- * @version 10.0
+ * @version 11.0
  */
 public class RoomInventory {
 
@@ -35,5 +35,12 @@ public class RoomInventory {
 
     public int getAvailableCount(String roomType) {
         return roomAvailability.getOrDefault(roomType, 0);
+    }
+
+    public void displayInventory() {
+        System.out.println("\nCurrent Inventory Status:");
+        System.out.println("Single Rooms: " + getAvailableCount("Single"));
+        System.out.println("Double Rooms: " + getAvailableCount("Double"));
+        System.out.println("Suite Rooms: " + getAvailableCount("Suite"));
     }
 }
