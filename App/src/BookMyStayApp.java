@@ -1,19 +1,22 @@
+import java.util.Scanner;
+
 /**
  * =====================================================
  * MAIN CLASS - BookMyStayApp
  * =====================================================
  *
- * Use Case 8: Booking History & Reporting
+ * Use Case 9: Error Handling & Validation
  *
  * Description:
- * This class demonstrates how
- * confirmed bookings are stored
- * and reported.
+ * This class demonstrates how user input
+ * is validated before booking is processed.
  *
- * The system maintains an ordered
- * audit trail of reservations.
+ * The system:
+ * - Accepts user input
+ * - Validates input centrally
+ * - Handles errors gracefully
  *
- * @version 8.0
+ * @version 9.0
  */
 public class BookMyStayApp {
 
@@ -24,39 +27,39 @@ public class BookMyStayApp {
      */
     public static void main(String[] args) {
 
-        System.out.println("Booking History and Reporting\n");
+        // Display application header
+        System.out.println("Booking Validation");
 
-        // Initialize components
+        Scanner scanner = new Scanner(System.in);
+
+        // Initialize required components
         RoomInventory inventory = new RoomInventory();
+        ReservationValidator validator = new ReservationValidator();
         BookingRequestQueue bookingQueue = new BookingRequestQueue();
-        RoomAllocationService allocationService = new RoomAllocationService();
-        BookingHistory bookingHistory = new BookingHistory();
-        BookingReportService reportService = new BookingReportService();
 
-        // Create booking requests
-        Reservation r1 = new Reservation("Abhi", "Single");
-        Reservation r2 = new Reservation("Subha", "Double");
-        Reservation r3 = new Reservation("Vanmathi", "Suite");
+        try {
+            // Accept user input
+            System.out.print("Enter guest name: ");
+            String guestName = scanner.nextLine();
 
-        // Add requests to queue
-        bookingQueue.addRequest(r1);
-        bookingQueue.addRequest(r2);
-        bookingQueue.addRequest(r3);
+            System.out.print("Enter room type (Single/Double/Suite): ");
+            String roomType = scanner.nextLine();
 
-        // Process bookings in FIFO order and add to history
-        while (bookingQueue.hasPendingRequests()) {
-            Reservation currentRequest = bookingQueue.getNextRequest();
-            String roomId = allocationService.allocateRoom(currentRequest, inventory);
+            // Validate input
+            validator.validate(guestName, roomType, inventory);
 
-            // Add to booking history if allocation was successful
-            if (roomId != null) {
-                bookingHistory.addReservation(currentRequest);
-            }
+            // If validation passes, create and queue reservation
+            Reservation reservation = new Reservation(guestName, roomType);
+            bookingQueue.addRequest(reservation);
+
+            System.out.println("Booking request accepted for: " + guestName);
+
+        } catch (InvalidBookingException e) {
+            // Handle domain-specific validation errors
+            System.out.println("Booking failed: " + e.getMessage());
+
+        } finally {
+            scanner.close();
         }
-
-        System.out.println();
-
-        // Generate booking history report
-        reportService.generateReport(bookingHistory);
     }
 }
