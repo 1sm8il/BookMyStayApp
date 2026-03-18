@@ -3,17 +3,17 @@
  * MAIN CLASS - BookMyStayApp
  * =====================================================
  *
- * Use Case 6: Reservation Confirmation & Room Allocation
+ * Use Case 7: Add-On Service Selection
  *
  * Description:
- * This class demonstrates how booking
- * requests are confirmed and rooms
- * are allocated safely.
+ * This class demonstrates how optional
+ * services can be attached to a confirmed
+ * booking.
  *
- * It consumes booking requests in FIFO
- * order and updates inventory immediately.
+ * Services are added after room allocation
+ * and do not affect inventory.
  *
- * @version 6.0
+ * @version 7.0
  */
 public class BookMyStayApp {
 
@@ -24,16 +24,17 @@ public class BookMyStayApp {
      */
     public static void main(String[] args) {
 
-        System.out.println("Room Allocation Processing");
+        System.out.println("Add-On Service Selection\n");
 
         // Initialize components
         RoomInventory inventory = new RoomInventory();
         BookingRequestQueue bookingQueue = new BookingRequestQueue();
         RoomAllocationService allocationService = new RoomAllocationService();
+        AddOnServiceManager serviceManager = new AddOnServiceManager();
 
-        // Create booking requests (FIFO order)
+        // Create booking requests
         Reservation r1 = new Reservation("Abhi", "Single");
-        Reservation r2 = new Reservation("Subha", "Single");
+        Reservation r2 = new Reservation("Subha", "Double");
         Reservation r3 = new Reservation("Vanmathi", "Suite");
 
         // Add requests to queue
@@ -46,5 +47,34 @@ public class BookMyStayApp {
             Reservation currentRequest = bookingQueue.getNextRequest();
             allocationService.allocateRoom(currentRequest, inventory);
         }
+
+        System.out.println();
+
+        // Create add-on services
+        AddOnService breakfast = new AddOnService("Breakfast", 25.0);
+        AddOnService spa = new AddOnService("Spa", 100.0);
+        AddOnService airportPickup = new AddOnService("Airport Pickup", 50.0);
+
+        // Add services to reservations
+        // Abhi wants Breakfast and Airport Pickup
+        serviceManager.addService(r1.getRoomId(), breakfast);
+        serviceManager.addService(r1.getRoomId(), airportPickup);
+
+        // Subha wants Spa
+        serviceManager.addService(r2.getRoomId(), spa);
+
+        // Vanmathi wants all services
+        serviceManager.addService(r3.getRoomId(), breakfast);
+        serviceManager.addService(r3.getRoomId(), spa);
+        serviceManager.addService(r3.getRoomId(), airportPickup);
+
+        // Display services for each reservation
+        serviceManager.displayServicesForReservation(r1.getRoomId());
+        System.out.println();
+
+        serviceManager.displayServicesForReservation(r2.getRoomId());
+        System.out.println();
+
+        serviceManager.displayServicesForReservation(r3.getRoomId());
     }
 }
