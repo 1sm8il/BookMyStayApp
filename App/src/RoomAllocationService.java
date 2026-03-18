@@ -8,9 +8,9 @@ import java.util.Set;
  * CLASS - RoomAllocationService
  * =====================================================
  *
- * Use Case 8: Booking History & Reporting
+ * Use Case 10: Booking Cancellation & Inventory Rollback
  *
- * @version 8.0
+ * @version 10.0
  */
 public class RoomAllocationService {
 
