@@ -6,9 +6,9 @@ import java.util.Map;
  * CLASS - RoomInventory
  * =====================================================
  *
- * Use Case 8: Booking History & Reporting
+ * Use Case 9: Error Handling & Validation
  *
- * @version 8.0
+ * @version 9.0
  */
 public class RoomInventory {
 
